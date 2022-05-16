@@ -1,14 +1,11 @@
 package com.example.gurmanica.pojo
 
-import com.google.gson.JsonObject
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-data class JsonData (
-    @SerializedName ("jsonData")
+data class MenuLIstOfData (
+    @SerializedName("data")
     @Expose
-    val dataJsonObject: JsonObject? = null
+    val data: List<Datum>? = null
 
-
-    )
-
+)

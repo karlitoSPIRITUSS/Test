@@ -24,21 +24,28 @@ class ViewMenu : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_menu)
 
-        viewModel = ViewModelProvider(this)[ViewModel::class.java]
+        /*
+        //viewModel = ViewModelProvider(this)[ViewModel::class.java]
+        ViewModelProvider.AndroidViewModelFactory(application).create(ViewModel::class.java)
         viewModel.loadData()
+
+         */
+
+
 
         layoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = layoutManager
         adapter = RecyclerAdapter()
         recyclerView.adapter = adapter
 
-        val disposable = ApiFactory.apiService.getJsonData()
-            .map { it.dataJsonObject?.menu?.joinToString(",") }
-            //.flatMap { ApiFactory.apiService.getData() }
+        val disposable = ApiFactory.apiService.getData()
+            //.map { it. }
+            //.flatMap { ApiFactory.apiService.getJsonData() }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                Log.d("TEST_OF_LOADING_DATA", it!!)
+
+                Log.d("TEST_OF_LOADING_DATA", it.toString())
             },{
                 Log.d("TEST_OF_LOADING_DATA", it.message!!)
             })
@@ -50,6 +57,8 @@ class ViewMenu : AppCompatActivity() {
         super.onDestroy()
         compositeDisposable.dispose()
     }
+
+
 
 
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import com.example.gurmanica.api.ApiFactory
 import com.example.gurmanica.pojo.JsonData
+import com.example.gurmanica.pojo.Menu
 import com.example.gurmanica.pojo.Position
 import com.google.gson.Gson
 import io.reactivex.disposables.CompositeDisposable
@@ -17,21 +18,24 @@ class ViewModel(application: Application):AndroidViewModel(application) {
 
     private val compositeDisposable = CompositeDisposable()
 
-    val priceList = db.positionDao().getPositionList()
+    //val priceList = db.positionDao().getPositionList()
 
+    /*
     fun getDetailInfo(): LiveData<List<Position>> {
         return db.positionDao().getPositionList()
     }
+
+     */
 
     init {
         loadData()
     }
 
     fun loadData() {
-        val disposable = ApiFactory.apiService.getData()
+        val disposable = ApiFactory.apiService.getJsonData()
             //.map { it.data?.map { it.coinInfo?.name }?.joinToString(",") }
-            .flatMap { ApiFactory.apiService.getData() }
-            //.map { getJsonData() }
+            .flatMap { ApiFactory.apiService.getJsonData() }
+            .map { getJsonData(it) }
             .delaySubscription(10, TimeUnit.SECONDS)
             .repeat()
             .retry()
@@ -47,12 +51,12 @@ class ViewModel(application: Application):AndroidViewModel(application) {
 
     //  !!!!!!!!!!!!!!!!!
 
-    /*
+
     private fun getJsonData(
         getJsonData: JsonData
-    ): List<List<Position>> {
+    ): List<Position> {   // тут было List<List<Position>>
         val result = ArrayList<Position>()
-        val jsonObject = coinPriceInfoRawData.coinPriceInfoJsonObject ?: return result
+        val jsonObject = getJsonData.dataJsonObject ?: return result
         val coinKeySet = jsonObject.keySet()
         for (coinKey in coinKeySet) {
             val currencyJson = jsonObject.getAsJsonObject(coinKey)
@@ -60,7 +64,7 @@ class ViewModel(application: Application):AndroidViewModel(application) {
             for (currencyKey in currencyKeySet) {
                 val priceInfo = Gson().fromJson(
                     currencyJson.getAsJsonObject(currencyKey),
-                    CoinPriceInfo::class.java
+                    Position::class.java
                 )
                 result.add(priceInfo)
             }
@@ -73,5 +77,5 @@ class ViewModel(application: Application):AndroidViewModel(application) {
         compositeDisposable.dispose()
     }
 
-     */
+
 }
